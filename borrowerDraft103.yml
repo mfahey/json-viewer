@@ -1,0 +1,1293 @@
+swagger: '2.0'
+info:
+  description: This BBF service will sit above both Customer and Credit Customer services
+  version: '1.0.3'
+  title: Borrower
+  termsOfService: ""
+host: 'tbd'
+basePath: /{region}/credit/v1/borrower
+tags:
+  - name: borrowers
+    description: Borrowers 
+schemes:
+- https
+- http
+securityDefinitions:
+  JWT:
+    description: ""
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+produces:
+  - application/hal+json
+  - application/json
+paths:
+  '/borrowers/{borrowerId}':
+    get:
+      tags:
+      - borrowers
+      summary: Find a Borrowers by Borrower ID
+      description: Returns a Borrower Representation for a single Borrower ID
+      operationId: getBorrowerByBorrowerId
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: region
+          in: path
+          required: true
+          type: string
+        - name: borrowerId
+          in: path
+          required: true
+          type: integer
+      responses:
+       '200':
+          description: Successful Response.
+          schema:
+            $ref: "#/definitions/Borrower"
+       '204':
+          description: Empty List
+       '400':
+          description: Bad request - Error at request data.
+          schema:
+            $ref: '#/definitions/BadRequestError'
+       '401':
+          description: Unauthorized - Authorization header missing or JWT Invalid.
+          schema:
+            $ref: '#/definitions/Error'
+       '403':
+          description: Forbidden          
+       '404':
+          description: The requested resource doesn’t exist or Borrower Not Found.
+          schema:
+            $ref: '#/definitions/Error'
+       '405':
+          description: Method Not Allowed
+       '406':
+          description: Not Accepted    
+       '500':
+          description: Internal Server Error.
+          schema:
+           $ref: '#/definitions/Error'
+       '502':
+          description: Downstream Services Unavailable
+       '503':
+          description: Service unavailable
+  '/borrowers/':
+    get:
+      tags:
+      - borrowers
+      summary: Find a Borrowers by Customer ID
+      description: Returns a single Borrower Representation for multiple Customer IDs
+      operationId: getBorrowerByCustomerIds
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: region
+          in: path
+          required: true
+          type: string
+        - name: customerId
+          in: query
+          required: false
+          type: integer
+      responses:
+       '200':
+          description: Successful Response.
+          schema:
+            $ref: "#/definitions/Borrower"
+       '204':
+          description: Empty List
+       '400':
+          description: Bad request - Error at request data.
+          schema:
+            $ref: '#/definitions/BadRequestError'
+       '401':
+          description: Unauthorized - Authorization header missing or JWT Invalid.
+          schema:
+            $ref: '#/definitions/Error'
+       '403':
+          description: Forbidden          
+       '404':
+          description: The requested resource doesn’t exist or Borrower Not Found.
+          schema:
+            $ref: '#/definitions/Error'
+       '405':
+          description: Method Not Allowed
+       '406':
+          description: Not Accepted    
+       '500':
+          description: Internal Server Error.
+          schema:
+           $ref: '#/definitions/Error'
+       '502':
+          description: Downstream Services Unavailable
+       '503':
+          description: Service unavailable
+
+  '/borrowers/{customerId}':
+    post:
+      tags:
+      - borrowers
+      summary: Find a Borrowers by a single Customer ID
+      description: Create a shell borrower, or return it if it already exists
+      operationId: postBorrowerByCustomerId
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: region
+          in: path
+          required: true
+          type: string
+        - name: customerId
+          in: path
+          required: true
+          type: integer
+      responses:
+       '200':
+          description: Successful Response.
+          schema:
+            $ref: "#/definitions/Borrower"
+       '201':
+          description: Borrower created.
+          schema:
+            $ref: "#/definitions/Borrower"
+       '204':
+          description: Empty List
+       '400':
+          description: Bad request - Error at request data.
+          schema:
+            $ref: '#/definitions/BadRequestError'
+       '401':
+          description: Unauthorized - Authorization header missing or JWT Invalid.
+          schema:
+            $ref: '#/definitions/Error'
+       '403':
+          description: Forbidden          
+       '404':
+          description: The requested resource doesn’t exist or Borrower Not Found.
+          schema:
+            $ref: '#/definitions/Error'
+       '405':
+          description: Method Not Allowed
+       '406':
+          description: Not Accepted    
+       '500':
+          description: Internal Server Error.
+          schema:
+           $ref: '#/definitions/Error'
+       '502':
+          description: Downstream Services Unavailable
+       '503':
+          description: Service unavailable
+          
+definitions:  
+  BadRequestError:
+    type: object
+    properties:
+      timestamp:
+        type: integer
+        format: int64
+        description: Timestamp in Unix/POSIX/Epoch time format represented as a long
+        example: "1553098557323"
+      status:
+        type: integer
+        format: int32
+        description: HTTP status code
+        example: "400"
+      error:
+        type: string
+        description: Error message
+        example: "Error processing request"
+      uuid:
+        type: string
+        description: 'The globally unique error id, i.e. for this specific error event'
+        example: 'b90b7e55-43b4-4bde-b69f-65a37c2ac136'
+      code:
+        type: string
+        description: Unique error code for the classification of the error
+        example: '400-5000-1102'
+      path:
+        type: string
+        description: URI path
+      message:
+        type: string
+        description: Error description
+        example: 'Message: Invalid Search Type Value passed'
+      info:
+        type: string
+        description: Error description
+      exception:
+        type: string
+        description: The exception message
+        example: ie.aib.credit.common.infrastructure.exception.CreditException
+      errors:
+        type: string
+        description: Error reasons
+        items:
+          type: string
+    title: BadRequestError
+    description: Error Message Standard for REST
+    
+  Error:
+    type: object
+    properties:
+      timestamp:
+        type: integer
+        format: int64
+        description: Timestamp in Unix/POSIX/Epoch time format represented as a long
+      status:
+        type: integer
+        format: int32
+        description: HTTP status code
+      error:
+        type: string
+        description: Error message
+      uuid:
+        type: string
+        description: 'The globally unique error id, i.e. for this specific error event'
+      code:
+        type: string
+        description: Unique error code for the classification of the error
+      path:
+        type: string
+        description: URI path
+      message:
+        type: string
+        description: Error description
+      info:
+        type: string
+        description: Error description
+      exception:
+        type: string
+        description: The exception message
+      errors:
+        type: string
+        description: Error reasons
+        items:
+          type: string
+    title: Error
+    description: Error Message Standard for REST
+
+  Link:
+    type: object
+    properties:
+      rel:
+        type: string
+      href:
+        type: string
+    title: Link
+ 
+ 
+ 
+ 
+  Borrower:
+    type: object
+    properties:
+      borrowerID:
+        type: string      
+      borrowerType:
+        $ref: '#/definitions/ReferenceData'
+      companyType:
+        $ref: '#/definitions/ReferenceData'
+      entityName:
+        type: string
+      isAibParty:
+        type: boolean
+      isSmeInd: 
+        type: boolean
+      hasRecordWithBank:
+        type: boolean
+      hasPrimaryRelationshipManager:
+        type: boolean
+      hasBusinessUnit:
+        type: boolean
+      totalAssets:
+        type: integer
+      totalDebt:
+        type: integer
+      tangibleNetWorth: 
+        type: integer
+      dateOfTangibleNetWorth:
+        type: string
+        format: date
+      sourceOfTangibleNetWorth:
+        type: string
+      primaryBusinessSector:
+        $ref: '#/definitions/ReferenceData'
+      commentOnBusinessSector:
+        type: string
+      hasPreviousDeclines:
+        type: boolean
+      commentOnDeclines: 
+        type: string
+      ownership:
+        $ref: '#/definitions/ReferenceData'
+      isBorrowerOnCoins:
+        type: boolean
+      legalActionTaken:
+        type: string
+      legalActionType:
+        $ref: '#/definitions/ReferenceData'
+      legalActionDate:
+        type: string
+        format: date
+      isReferredToMabs: 
+        type: boolean
+      refreshTimestamp:
+        type: string
+        format: date
+      lastRefreshDate:
+        type: string
+        format: date
+      customerSinceDate:
+        type: string
+        format: date
+      isTaxConfHeld:
+        type: boolean
+      provisionLastUpdated:
+        type: string
+        format: date-time
+      provisionUpdatedStaffId: 
+        type: string
+      provisionUpdatedStaffName:
+        type: string
+      isBorrowerPrivate:
+        type: boolean
+      isRestricted:
+        type: boolean
+      hasLeverage:
+        type: boolean
+      createdTimestamp:
+        type: string
+        format: date
+      createdStaffId:
+        type: string
+      lastUpdatedTimestamp:
+        type: string
+        format: date-time
+      lastUpdatedStaffId:
+        type: string
+      COINSList:
+        $ref: '#/definitions/EmbeddedCOINSList'
+      borrowerDemographics:
+        $ref: '#/definitions/BorrowerDemographics'
+      shareholderList:
+        $ref: '#/definitions/EmbeddedShareholderList'
+      borrowerAccountList:  
+        $ref: '#/definitions/EmbeddedAccountList'
+      EmbeddedCustomerList:
+        $ref: '#/definitions/EmbeddedCustomerList'
+      _links:
+        type: array
+        items:
+          $ref: '#/definitions/Link'        
+    title: borrowerInformation
+    description: Borrower Information
+  
+  
+  BorrowerDemographics: 
+    description: Borrower Demographics Response Object.
+    type: object
+    properties:
+      contactPerson:
+        type: string
+      occupationType:
+        $ref: '#/definitions/ReferenceData'
+      businessRegistrationNumber: 
+        type: string
+      auditorsName:
+        type: string
+      mainBanker:
+        type: string
+      businessFaxArea: 
+        type: string
+      businessFaxNumber:
+        type: string
+      businessTelephoneNumber:
+        type: string
+      businessVolumeAmount:
+        type: string
+      employeeTotalNumber:
+        type: integer
+      businessProfitLossAmount: 
+        type: string
+      businessProfitLossDate:
+        type: string
+        format: date
+      noMoProfitLoss:
+        type: string
+      directorsBorrowerFlag: 
+        type: boolean
+      directorsBorrowerPower:
+        type: string
+      hasCompanyBorrowerFlag:
+        type: boolean
+      companyBorrowerPower: 
+        type: string
+      isBusinessPremisesOwnedFlag:
+        type: boolean
+      isBusinessPremisesLeasedFlag:
+        type: boolean
+      isBusinessPremisesRentedFlag: 
+        type: boolean
+      businessRegisterInd:
+        type: boolean
+      yearsInBusiness:
+        type: string
+      hasMemoArticles:
+        type: boolean
+      taxCertificateRecordDate:
+        type: string
+        format: date
+      accountsAsAtDate: 
+        type: string
+        format: date
+      businessDescription:
+        type: string
+      numberOfOutlets:
+        type: string
+      websiteAddress:
+        type: string
+      periodEndDate: 
+        type: string
+        format: date
+      drawings:
+        type: string
+      stock:
+        type: string 
+      debtors:
+        type: string
+      landBuildings:
+        $ref: '#/definitions/ReferenceData'
+      machineryEq: 
+        type: string
+      otherAssets:
+        type: string
+      creditors:
+        type: string
+      taxLiabilities: 
+        type: string
+      borrowings:
+        type: string
+      otherLiabilities:
+        type: string
+      lastMaintainedId: 
+        type: string
+      lastMaintainedDate:
+        type: string
+        format: date-time
+      sourceOfInfo:
+        $ref: '#/definitions/ReferenceData'
+      grossProfit: 
+        type: string
+      borrowerODraft:
+        type: string
+      borrowerLessThan12m:
+        type: string 
+      otherAssetsShres:
+        type: string
+      assetsInvestProp:
+        type: string
+      otherAssetsDep: 
+        type: string
+      riskCountryCode:
+        $ref: '#/definitions/ReferenceData'
+      riskBusTypeCode:
+        $ref: '#/definitions/ReferenceData'
+      hasRiskCompStructure:
+        type: boolean
+      incorpCountryCode:
+        $ref: '#/definitions/ReferenceData' 
+      createdTimestamp:
+        type: string
+        format: date-time
+      createdStaffId:
+        type: string
+      lastUpdatedTimestamp: 
+        type: string
+        format: date-time
+      lastUpdatedStaffId:
+          type: string
+      shortName:
+        type: string
+  
+  
+  EmbeddedCustomerList:
+    type: object
+    properties:
+      _embedded:
+        $ref: '#/definitions/CustomerList'
+    title: Customer List
+  
+  CustomerList:
+    type: object
+    properties:
+      customers:
+        type: array
+        items:
+          $ref: '#/definitions/Customer'
+    title: Customer List
+        
+  Customer:
+    type: object
+    properties:
+      customerID:
+        type: string      
+      profile:
+        $ref: '#/definitions/profile'
+      personalProfileSummary:
+        $ref: '#/definitions/PersonalProfile'
+      statuses:
+        $ref: '#/definitions/Statuses'        
+      customerFlags:
+        $ref: '#/definitions/SystemInfo'
+      contactDetails:
+        $ref: '#/definitions/ContactDetailsNoAudit'       
+      selfService:
+        $ref: '#/definitions/SelfService'      
+      previousAddressList:
+        $ref: '#/definitions/PreviousAddressList'
+      embeddedRelationshipList:
+        $ref: '#/definitions/EmbeddedRelationshipList'
+      farmingDemos:  
+        $ref: '#/definitions/FarmingProfile'
+      financialsList: 
+        $ref: '#/definitions/FinancialsList'
+      businessDemos:  
+        $ref: '#/definitions/CompanyInfo'
+      marketingPreferences:  
+        $ref: '#/definitions/MarketingPreferences'
+      accountList:  
+        $ref: '#/definitions/EmbeddedAccountList'
+      _links:
+        type: array
+        items:
+          $ref: '#/definitions/Link'        
+    title: Base Level Customer Information
+    
+    
+  Account:
+    type: object
+    properties:
+      accountID:
+        type: string
+      productGroup:
+        type: string
+      productCode:
+        type: string
+      shortName:
+        type: string
+      creditGrade:
+        type: string
+      balance:
+        type: string
+      limit:
+        type: string
+      sectorCode:
+        $ref: '#/definitions/ReferenceData'
+      purpose:
+        type: string
+      margin:
+        type: string
+      interestRate:
+        type: string
+      schemeRelated:
+        type: string
+      signingAuthority:
+        $ref: '#/definitions/ReferenceData'
+      openDate:
+        type: string
+        format: date
+      closedDate:
+        type: string
+        format: date
+      lastTransaction:
+        type: string
+        format: date  
+    title: Account
+
+  EmbeddedAccountList:
+    type: object
+    properties:
+      _embedded:
+        $ref: '#/definitions/AccountList'
+    title: Account List
+    
+  AccountList:
+    type: object
+    properties:
+      accounts:
+        type: array
+        items:
+          $ref: '#/definitions/Account'
+    title: Account List  
+    
+    
+  Shareholder:
+    type: object
+    properties:
+      shareholderName:
+        type: string
+      shareholderOwnershipPercentage:
+        type: integer
+    title: Shareholders
+
+  EmbeddedShareholderList:
+    type: object
+    properties:
+      _embedded:
+        $ref: '#/definitions/ShareholderList'
+    title: Shareholders List
+    
+  ShareholderList:
+    type: object
+    properties:
+      shareholders:
+        type: array
+        items:
+          $ref: '#/definitions/Shareholder'
+    title: Shareholder List
+    
+    
+    
+   
+  COINS:
+    type: object
+    properties:
+      coinsGroupCode:
+        type: string
+      coinsNumber:
+        type: integer
+    title: COINS
+
+  EmbeddedCOINSList:
+    type: object
+    properties:
+      _embedded:
+        $ref: '#/definitions/COINSList'
+    title: COINS List
+    
+  COINSList:
+    type: object
+    properties:
+      COINS:
+        type: array
+        items:
+          $ref: '#/definitions/COINS'
+    title: COINS List
+    
+  
+  Financial:
+    type: object
+    properties:
+      id:
+        type: string
+      itemType:
+        $ref: '#/definitions/ReferenceData'
+      description:
+        type: string
+      assetBalance:
+        type: string
+      liabilityAmount:
+        type: string
+      financialInstitution:
+        $ref: '#/definitions/ReferenceData'
+      paymentAmount:
+        type: string
+      frequency:
+        $ref: '#/definitions/ReferenceData'
+      finalDate:
+        type: string
+        format: date
+      auditData:
+        $ref: '#/definitions/AuditData'
+    title: Asset, Liability or Other Income 
+
+  FinancialsList:
+    type: object
+    properties:
+      financials:
+        type: array
+        items:
+          $ref: '#/definitions/Financial'
+    title: List Financials
+ 
+ 
+  CompanyInfo:
+    type: object
+    properties:
+      articlesOfMemorandumInOrder:
+        type: boolean
+      auditorName:
+        type: string  
+      boughtViaFormationAgent:
+        type: boolean   
+      customerIsTrust:
+        type: boolean 
+      complexStructure:
+        type: boolean  
+      countryOfIncorporation:
+        type: string
+      formationAgentName:
+        type: string  
+      highCashBusiness:
+        type: boolean 
+      highRiskCountryValue:
+        type: string        
+      otherIdentifierType:
+        type: string
+      otherIdentifierIdentifier:
+        type: string
+      otherIdentifierVerified:
+        type: boolean 
+      riskBusinessType:
+        type: string
+      riskBusinessSubType:
+        type: string
+      simplifiedDueDiligence:
+        type: boolean 
+      specialPurposeVehicle:
+        type: boolean         
+      tradingCertificateNumber:
+        type: string          
+      principalDetailUpdated:
+        type: boolean          
+      companyType:
+        $ref: '#/definitions/CompanyType'       
+      croDetails:
+        $ref: '#/definitions/CroDetails'
+
+
+  CompanyType:
+    type: object
+    properties:
+      category:
+        type: string
+      companyTypeCode:
+        type: integer        
+      subcategory:
+        type: string  
+
+  CroDetails:
+    type: object
+    properties:
+      companyNumber:
+        type: string
+      legalName:
+        type: string
+      registeredAddress:
+        type: string
+      companyStatusCode:
+        type: integer
+        format: int32
+      companyStatus:
+        type: string
+      lastVerifiedDate:
+        type: string
+        format: date-time
+      croNumberVerified:
+        type: boolean
+ 
+ 
+  MarketingPreferences:
+    type: object
+    properties:
+      preferredDay:
+        $ref: '#/definitions/ReferenceData' 
+      preferredDayAudit:
+        $ref: '#/definitions/AuditData'        
+      preferredTime:
+        $ref: '#/definitions/ReferenceData' 
+      preferredTimeAudit:
+        $ref: '#/definitions/AuditData'          
+      preferredMethod:
+        $ref: '#/definitions/ReferenceData' 
+      allowEmail:
+        type: boolean
+      allowEmailAudit:
+        $ref: '#/definitions/AuditData' 
+      allowMail:
+        type: boolean
+      allowMailAudit:
+        $ref: '#/definitions/AuditData' 
+      allowPhone:
+        type: boolean        
+      allowPhoneAudit:
+        $ref: '#/definitions/AuditData' 
+    title: Marketing Preferences
+
+  MarketingPreferencesNoAudit:
+    type: object
+    properties:
+      preferredDay:
+        $ref: '#/definitions/ReferenceData' 
+      preferredTime:
+        $ref: '#/definitions/ReferenceData' 
+      preferredMethod:
+        $ref: '#/definitions/ReferenceData' 
+      allowEmail:
+        type: boolean
+      allowMail:
+        type: boolean
+      allowPhone:
+        type: boolean        
+    title: Marketing Preferences No Audit
+  
+  
+  Relationship:
+    type: object
+    properties:
+      type:
+        $ref: '#/definitions/ReferenceData'
+      customerID:
+        type: string     
+      relationshipAudit:
+        $ref: '#/definitions/AuditData'
+    title: Customer Relationship
+
+  EmbeddedRelationshipList:
+    type: object
+    properties:
+      _embedded:
+        $ref: '#/definitions/RelationshipList'
+    title: Embedded Relationship List
+    
+  RelationshipList:
+    type: object
+    properties:
+      relationships:
+        type: array
+        items:
+          $ref: '#/definitions/Relationship'
+    title: Relationship List
+    
+  PreviousAddress:
+    type: object
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+      addressLine5:
+        type: string
+      postCode:
+        type: string
+      auditData:
+        $ref: '#/definitions/AuditData'
+    title: Previous Address
+
+
+
+  PreviousAddressList:
+    type: object
+    properties:
+      previous-addresses:
+        type: array
+        items:
+          $ref: '#/definitions/PreviousAddress'
+    title: ListPrevious Addresses
+    
+  FarmingProfile:
+    type: object
+    properties:
+      class:
+        $ref: '#/definitions/ReferenceData'
+      status:
+        $ref: '#/definitions/ReferenceData'
+      programme:
+        $ref: '#/definitions/ReferenceData'
+      reps:
+        $ref: '#/definitions/ReferenceData'
+      auditorsName:
+        type: string     
+      value:
+        type: string
+      valueDate:
+        type: string        
+      coopName:
+        type: string   
+      lastVisitDate:
+        type: string 
+      acreageOwned:
+        type: string
+      acreageRent:
+        type: string
+      acreageLet:
+        type: string
+      acreageForestry:
+        type: string
+      acreageTillage:
+        type: string
+      acreagePasture:
+        type: string
+      acreageOther:
+        type: string
+      audit:
+        $ref: '#/definitions/AuditData'
+    title: Customer Farming Profile
+    
+  ReferenceData:
+    type: object
+    properties:
+      label:
+        type: string
+      code:
+        type: string
+    title: Reference Data 
+    
+     
+  profile:
+    type: object
+    properties:
+      fullName:
+        type: string     
+      customerType:
+        type: string  
+      personAssigned:
+        type: string  
+      assignedStaffMemberID:
+        type: string  
+      contactPerson:
+        type: string  
+      salutation:
+        type: string  
+    title: Customer Personal Profile
+
+
+  
+  PersonalProfile:
+    type: object
+    properties:
+      title:
+        type: string     
+      firstName:
+        type: string
+      middleInitial:
+        type: string        
+      lastName:
+        type: string
+      nameSuffix:
+        type: string        
+      dateOfBirth:
+        type: string
+        format: date
+      gender:
+        $ref: '#/definitions/ReferenceData'
+      countryOfResidence:
+        $ref: '#/definitions/ReferenceData'
+      nationality:
+        $ref: '#/definitions/ReferenceData'
+      ppsn:
+        type: string 
+      maritalStatus:
+        $ref: '#/definitions/ReferenceData'
+      turnover:
+        type: string   
+      turnoverDate:
+        type: string 
+        format: date
+      asAtDate:
+        type: string 
+        format: date
+      employment:
+        $ref: '#/definitions/EmploymentProfile' 
+      homeAndFamily:
+        $ref: '#/definitions/HomeAndFamilyProfile'
+      auditData:
+        $ref: '#/definitions/AuditData'        
+    title: Customer Personal Profile
+    
+   
+  HomeAndFamilyProfile:
+    type: object
+    properties:
+      residentialStatus:
+        $ref: '#/definitions/ReferenceData'
+      yearsAtCurrentAddress:
+        type: integer  
+      houseValueAmount:
+        type: string  
+      houseValueDate:
+        type: string 
+        format: date        
+      numDependents:
+        type: integer  
+      familyAgeRangeFrom:
+        type: integer  
+      familyAgeRangeTo:
+        type: integer  
+    title: Customer Personal Profile
+    
+  EmploymentProfile:
+    type: object
+    properties:
+      employmentType:
+        $ref: '#/definitions/ReferenceData'
+      jobDescription:
+        type: string
+      employmentStatus:
+        $ref: '#/definitions/ReferenceData'
+      employerName:
+        type: string
+      seventyHoursPermanent:
+        type: string        
+      employerBusiness:
+        $ref: '#/definitions/ReferenceData'
+      employeeClassification:
+        $ref: '#/definitions/ReferenceData'
+      businessCategory:
+        $ref: '#/definitions/ReferenceData'
+      employeeCategory:
+        $ref: '#/definitions/ReferenceData'
+      employerBusinessSector:
+        $ref: '#/definitions/ReferenceData'
+      employerBusinessType:
+        $ref: '#/definitions/ReferenceData'
+      yearsWithCurrentEmployer:
+        type: integer  
+      contractEmployment:
+        type: boolean   
+      employedForSixMonths:
+        type: boolean
+      contractExpiryDate:
+        type: string 
+        format: date
+      pensionable:
+        type: boolean        
+      yearlyGrossIncome:
+        type: string
+      paymentFrequency:
+        type: string  
+      payedDirectly:
+        type: boolean   
+      salaryEffectiveDate:
+        type: string         
+      netMonthlySalary:
+        type: string 
+      partTimeHours:
+        type: boolean         
+    title: Customer Employment Profile 
+
+  SystemInfo:
+    type: object
+    properties:
+      marketSegmentCode:
+        $ref: '#/definitions/ReferenceData'
+      creditGradeCode:
+        $ref: '#/definitions/ReferenceData'
+      corporateRetailClassificationCode:
+        $ref: '#/definitions/ReferenceData'
+      customerSinceDate:
+        type: string
+      customerStatus:
+        $ref: '#/definitions/ReferenceData'
+      isMergePending:
+        type: boolean
+      isPotentialMerge:    
+        type: boolean
+      lastVerifiedDate:    
+        type: string
+      automatedUpdateRisk:
+        type: boolean
+      manuallyUpdatedRisk:
+        type: boolean
+      specialFlag:
+        type: boolean
+      excludefromMailing:
+        type: boolean
+      shareInfoWithGroup:
+        type: boolean
+      businessSource:
+        type: string        
+    title: SystemInfo
+    
+  Address:
+    type: object
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+      postCode:
+        type: string
+      countyCode:
+        $ref: '#/definitions/ReferenceData'
+    title: Address
+
+  AddressWithAudit:
+    type: object
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+      postCode:
+        type: string
+      countyCode:
+        $ref: '#/definitions/ReferenceData'
+      addressAudit:
+        $ref: '#/definitions/AuditData'        
+    title: Address
+
+  ContactDetailsNoAudit:
+    type: object
+    properties:
+      phoneAndEmail:
+        $ref: '#/definitions/PhoneAndEmailNoAudit'
+      profileAddress:
+        $ref: '#/definitions/Address'        
+    title: ContactDetail No Audit Info
+
+  PhoneAndEmailNoAudit:
+    type: object
+    properties:
+      homePhone:
+        $ref: '#/definitions/PhoneNumber'
+      workPhone:
+        $ref: '#/definitions/PhoneNumber'
+      mobilePhone:
+        $ref: '#/definitions/PhoneNumber'
+      workEmail:
+        type: string
+      homeEmail:
+        type: string
+    title: Phone And Email No Audit
+
+  PhoneNumber:
+    type: object
+    properties:
+      prefix:
+        type: string
+      number:
+        type: string
+      fullNumber:
+        type: string
+
+
+  PhoneAndEmail:
+    type: object
+    properties:
+      homePhone:
+        $ref: '#/definitions/PhoneNumber'
+      homePhoneAudit:
+        $ref: '#/definitions/AuditData'           
+      workPhone:
+        $ref: '#/definitions/PhoneNumber'
+      workPhoneAudit:
+        $ref: '#/definitions/AuditData'           
+      mobilePhone:
+        $ref: '#/definitions/PhoneNumber'
+      mobilePhoneAudit:
+        $ref: '#/definitions/AuditData'           
+      workEmail:
+        type: string
+      workEmailAudit:
+        $ref: '#/definitions/AuditData'         
+      homeEmail:
+        type: string
+      homeEmailAudit:
+        $ref: '#/definitions/AuditData'
+    title: Phone And Email No Audit
+        
+  ContactDetails:
+    type: object
+    properties:
+      phoneAndEmail:
+        $ref: '#/definitions/PhoneAndEmail'
+      profileAddress:
+        $ref: '#/definitions/AddressWithAudit'        
+    title: ContactDetails
+
+  CJAData:
+    type: object
+    properties:
+      status:
+        type: string
+      documentSystemID:
+        type: string        
+      documentSystem:
+        type: string        
+  
+  Statuses:
+    type: object
+    properties:
+      criminalJusticeAct:
+        $ref: '#/definitions/CJAData'
+    title: Statuses
+
+  AuditData:
+    type: object
+    properties:
+      lastUpdatedBy:
+        type: string
+      lastUpdated:
+        type: string
+        format: date-time
+      lastUpdatedChannel:
+        type: string 
+      lastConfirmedBy:
+        type: string
+      lastConfirmed:
+        type: string
+      lastConfirmedChannel:
+        type: string         
+    title: AuditData  
+
+  SelfService:
+    type: object
+    properties:
+      registrationID:
+        type: string
+      businessBankingRegistrationID:
+        type: string
+      businessBankingRegistrationDate:
+        type: string      
+    title: Self Service Ids
+
+  SelfServiceData:
+    type: object
+    properties:
+      serviceName:
+        type: string
+      registrationNumber:
+        type: string
+      registrationDate:
+        type: string
+      messageTotal:
+        type: string
+      newMessageTotal:
+        type: string
+      pacStatus:
+        type: string
+      invalidCountPac:
+        type: string
+      pacDigits:
+        type: string
+      pacReorderDate:
+        type: string
+      usageTimeStamp:
+        type: string
+      sbibCustomer:
+        type: string
+      sbibEligible:
+        type: boolean
+    title: Self Service Data

@@ -1,0 +1,607 @@
+swagger: '2.0'
+info:
+  description: Api Documentation
+  version: '1.0'
+  title: Api Documentation
+  termsOfService: 'urn:tos'
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+host: 'rhcusalvi6.mid.aib.pri:8810'
+basePath: /
+tags:
+  - name: get-customer-controller
+    description: GET Customer  Controller
+schemes:
+  - https
+produces:
+  - application/hal+json
+  - application/json
+paths:
+  '/{ciRegion}/{version}/customers/summaries':
+    get:
+      tags:
+        - locate-customer-controller
+      summary: locateCustomer
+      operationId: locateCustomerUsingGET
+      produces:
+        - application/json
+      parameters:
+        - name: version
+          in: path
+          description: version
+          required: true
+          type: string
+        - name: ciRegion
+          in: path
+          description: ciRegion
+          required: true
+          type: string
+        - name: customerID
+          in: query
+          description: CIF Key 
+          required: false
+          type: string
+        - name: customerType
+          in: query
+          description: Personal or Organisation
+          required: true
+          type: string            
+        - name: phoneNumberPrefix
+          in: query
+          description: Phone number Area Code
+          required: false
+          type: string  
+        - name: phoneNumber
+          in: query
+          description: Phone number
+          required: false
+          type: string           
+        - name: customerName
+          in: query
+          description: Customer's Name
+          required: false
+          type: string  
+        - name: countyCode
+          in: query
+          description: County from Customer's address
+          required: false
+          type: string  
+        - name: accountNumber
+          in: query
+          description: Account Number belonging to Customer
+          required: false
+          type: string 
+        - name: cardNumber
+          in: query
+          description: Card Number belonging to Customer
+          required: false
+          type: string 
+        - name: cardType
+          in: query
+          description: Card Number belonging to Customer
+          required: false
+          type: string          
+      responses:
+        '200':
+          description: OK
+          schema:
+#            $ref: '#/definitions/Resource«CustomerBase»'
+            $ref: '#/definitions/CustomerLocateResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Customer Not Found
+  '/{ciRegion}/{version}/customers':
+    post:
+      tags:
+        - create-customer-controller
+      summary: Create Customer
+      operationId: createCustomerUsingPOST
+      produces:
+        - application/json
+      parameters:
+        - name: version
+          in: path
+          description: version
+          required: true
+          type: string
+        - name: ciRegion
+          in: path
+          description: ciRegion
+          required: true
+          type: string
+        - in: body
+          name: customerDetails
+          description: Customer Details
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCustomerBase'
+      responses:
+        '201':
+          description: Created
+          schema:
+#            $ref: '#/definitions/Resource«CustomerBase»'
+            $ref: '#/definitions/CreateCustomerBase'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/{ciRegion}/{version}/customers/{customerID}/':
+    get:
+      tags:
+        - get-customer-controller
+      summary: getCustomerDetails
+      operationId: getCustomerUsingGET
+      produces:
+        - application/json
+      parameters:
+        - name: version
+          in: path
+          description: version
+          required: true
+          type: string
+        - name: ciRegion
+          in: path
+          description: ciRegion
+          required: true
+          type: string
+        - name: customerID
+          in: path
+          description: CIF Key
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+#            $ref: '#/definitions/Resource«CustomerBase»'
+            $ref: '#/definitions/CustomerBase'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  
+
+
+
+  
+definitions:
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: string
+      error:
+        type: string
+      errors:
+        type: object
+      message:
+        type: string
+      path:
+        type: string
+      status:
+        type: integer
+        format: int32
+      timestamp:
+        type: string
+        format: date-time
+      uuid:
+        type: string
+    title: Error
+
+  Failure:
+    type: object
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+    title: Failure
+    
+  Link:
+    type: object
+    properties:
+      rel:
+        type: string
+      href:
+        type: string
+    title: Link
+
+  CustomerLocateEntry:
+    type: object
+    properties:
+      customerID:
+        type: string     
+      fullName:
+        type: string     
+      dateOfBirth:
+        type: string
+      customerType:
+        type: string  
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+
+    title: Customer Locate Information
+
+  CustomerLocateResponse:
+    type: object
+    properties:
+      _embedded:
+        $ref: '#/definitions/CustomerLocateArray' 
+    title: Customer Locate Information
+
+  CustomerLocateArray:
+    type: object
+    properties:
+      summaries:
+        type: array     
+        items:
+            $ref: '#/definitions/CustomerLocateEntry' 
+    title: Customer Locate Information
+
+  CustomerBase:
+    type: object
+    properties:
+      customerID:
+        type: string      
+      profile:
+        $ref: '#/definitions/profile'
+      personalProfileSummary:
+        $ref: '#/definitions/PersonalProfile'
+      statuses:
+        $ref: '#/definitions/Statuses'        
+      customerFlagsSummary:
+        $ref: '#/definitions/SystemInfo'
+      contactDetails:
+        $ref: '#/definitions/ContactDetailsNoAudit'       
+      selfService:
+        $ref: '#/definitions/SelfService'      
+      _links:
+        type: array
+        items:
+          $ref: '#/definitions/Link'        
+    title: Base Level Customer Information
+
+  CreateCustomerBase:
+    type: object
+    properties:
+      profile:
+        $ref: '#/definitions/PersonalProfile'
+      contactDetails:
+        $ref: '#/definitions/ContactDetailsNoAudit'        
+    title: Base Level Customer Information for Create
+ 
+  profile:
+    type: object
+    properties:
+      fullName:
+        type: string     
+      customerType:
+        type: string  
+      personAssigned:
+        type: string  
+      assignedStaffMemberID:
+        type: string  
+      contactPerson:
+        type: string  
+      salutation:
+        type: string  
+    title: Customer Personal Profile
+
+
+  
+  PersonalProfile:
+    type: object
+    properties:
+      title:
+        type: string     
+      firstName:
+        type: string
+      middleInitial:
+        type: string        
+      lastName:
+        type: string
+      nameSuffix:
+        type: string        
+      dateOfBirth:
+        type: string
+      gender:
+        $ref: '#/definitions/ReferenceData'
+      countryOfResidence:
+        $ref: '#/definitions/ReferenceData'
+      nationality:
+        $ref: '#/definitions/ReferenceData'
+      maritalStatus:
+        $ref: '#/definitions/ReferenceData'
+      turnover:
+        type: string   
+      turnoverDate:
+        type: string 
+      asAtDate:
+        type: string 
+    title: Customer Personal Profile
+
+
+
+
+    
+  SystemInfo:
+    type: object
+    properties:
+      marketSegmentCode:
+        $ref: '#/definitions/ReferenceData'
+      creditGradeCode:
+        $ref: '#/definitions/ReferenceData'
+      corporateRetailClassificationCode:
+        $ref: '#/definitions/ReferenceData'
+      customerSinceDate:
+        type: string
+      customerStatus:
+        $ref: '#/definitions/ReferenceData'
+      isMergePending:
+        type: boolean
+      isPotentialMerge:    
+        type: boolean
+      lastVerifiedDate:    
+        type: string
+      automatedUpdateRisk:
+        type: boolean
+      manuallyUpdatedRisk:
+        type: boolean
+      specialFlag:
+        type: boolean
+      excludefromMailing:
+        type: boolean
+      shareInfoWithGroup:
+        type: boolean
+      businessSource:
+        type: string        
+    title: SystemInfo
+    
+  Address:
+    type: object
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+      postCode:
+        type: string
+      countyCode:
+        $ref: '#/definitions/ReferenceData'
+    title: Address
+
+  AddressWithAudit:
+    type: object
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+      postCode:
+        type: string
+      countyCode:
+        $ref: '#/definitions/ReferenceData'
+      addressAudit:
+        $ref: '#/definitions/AuditData'        
+    title: Address
+
+  ContactDetailsNoAudit:
+    type: object
+    properties:
+      phoneAndEmail:
+        $ref: '#/definitions/PhoneAndEmailNoAudit'
+      profileAddress:
+        $ref: '#/definitions/Address'        
+    title: ContactDetail No Audit Info
+
+  PhoneAndEmailNoAudit:
+    type: object
+    properties:
+      homePhone:
+        $ref: '#/definitions/PhoneNumber'
+      workPhone:
+        $ref: '#/definitions/PhoneNumber'
+      mobilePhone:
+        $ref: '#/definitions/PhoneNumber'
+      workEmail:
+        type: string
+      homeEmail:
+        type: string
+    title: Phone And Email No Audit
+
+  PhoneNumber:
+    type: object
+    properties:
+      prefix:
+        type: string
+      number:
+        type: string
+      fullNumber:
+        type: string
+
+
+  PhoneAndEmail:
+    type: object
+    properties:
+      homePhone:
+        $ref: '#/definitions/PhoneNumber'
+      homePhoneAudit:
+        $ref: '#/definitions/AuditData'           
+      workPhone:
+        $ref: '#/definitions/PhoneNumber'
+      workPhoneAudit:
+        $ref: '#/definitions/AuditData'           
+      mobilePhone:
+        $ref: '#/definitions/PhoneNumber'
+      mobilePhoneAudit:
+        $ref: '#/definitions/AuditData'           
+      workEmail:
+        type: string
+      workEmailAudit:
+        $ref: '#/definitions/AuditData'         
+      homeEmail:
+        type: string
+      homeEmailAudit:
+        $ref: '#/definitions/AuditData'
+    title: Phone And Email No Audit
+        
+  ContactDetails:
+    type: object
+    properties:
+      phoneAndEmail:
+        $ref: '#/definitions/PhoneAndEmail'
+      profileAddress:
+        $ref: '#/definitions/AddressWithAudit'        
+    title: ContactDetails
+
+  MarketingPreferences:
+    type: object
+    properties:
+      preferredDay:
+        type: string
+      preferredDayAudit:
+        $ref: '#/definitions/AuditData'        
+      preferredTime:
+        type: string
+      preferredTimeAudit:
+        $ref: '#/definitions/AuditData'          
+      preferredMethod:
+        type: string
+      allowEmail:
+        type: boolean
+      allowEmailAudit:
+        $ref: '#/definitions/AuditData' 
+      allowMail:
+        type: boolean
+      allowMailAudit:
+        $ref: '#/definitions/AuditData' 
+      allowPhone:
+        type: boolean        
+      allowPhoneAudit:
+        $ref: '#/definitions/AuditData' 
+    title: MarketingPreferences
+
+  CJAData:
+    type: object
+    properties:
+      status:
+        type: string
+      documentSystemID:
+        type: string        
+      documentSystem:
+        type: string        
+  
+  Statuses:
+    type: object
+    properties:
+      criminalJusticeAct:
+        $ref: '#/definitions/CJAData'
+    title: Statuses
+
+  AuditData:
+    type: object
+    properties:
+      lastUpdatedBy:
+        type: string
+      lastUpdated:
+        type: string
+      lastUpdatedChannel:
+        type: string 
+      lastConfirmedBy:
+        type: string
+      lastConfirmed:
+        type: string
+      lastConfirmedChannel:
+        type: string         
+    title: AuditData  
+
+  ReferenceData:
+    type: object
+    properties:
+      label:
+        type: string
+      code:
+        type: string
+    title: Reference Data 
+
+  SelfService:
+    type: object
+    properties:
+      registrationID:
+        type: string
+      businessBankingRegistrationID:
+        type: string
+      businessBankingRegistrationDate:
+        type: string      
+    title: Self Service Ids
+
+  SelfServiceData:
+    type: object
+    properties:
+      serviceName:
+        type: string
+      registrationNumber:
+        type: string
+      registrationDate:
+        type: string
+      messageTotal:
+        type: string
+      newMessageTotal:
+        type: string
+      pacStatus:
+        type: string
+      invalidCountPac:
+        type: string
+      pacDigits:
+        type: string
+      pacReorderDate:
+        type: string
+      usageTimeStamp:
+        type: string
+      sbibCustomer:
+        type: string
+      sbibEligible:
+        type: boolean
+    title: Self Service Data 
+
+  Resource«CustomerBase»:
+    type: object
+    properties:
+      preferences:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerBase'
+      links:
+        type: array
+        xml:
+          name: link
+          namespace: 'http://www.w3.org/2005/Atom'
+          attribute: false
+          wrapped: false
+        items:
+          $ref: '#/definitions/Link'
+    title: Resource«CustomerBase»
